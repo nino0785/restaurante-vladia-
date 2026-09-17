@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Delícia Cearense - Self Service</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <!-- Modal de Nome do Cliente -->
+    <div id="modal-nome" class="modal-nome">
+        <div class="modal-nome-content modal-nome-com-admin">
+            <!-- Botão admin no canto superior direito -->
+            <a href="admin-login.html" class="admin-access-btn admin-access-modal" title="Área do Restaurante">
+                <span class="admin-access-icon">⚙️</span>
+            </a>
+            
+            <div class="modal-logo-circle">🍛</div>
+            <h2>Bem-vindo ao <span>Delícia Cearense</span></h2>
+            <p>Digite seu nome para começar seu pedido:</p>
+            <input type="text" id="input-nome" placeholder="Seu nome aqui..." autofocus>
+            <button onclick="salvarNome()" class="btn-confirmar-nome">Começar</button>
+            <p style="font-size:0.8rem;color:#999;margin-top:15px;">
+                Isso nos ajuda a identificar seu pedido 😊
+            </p>
+        </div>
+    </div>
+
+    <!-- Modal para Nome da Marmita -->
+    <div id="modal-nome-marmita" class="modal-nome" style="display:none;">
+        <div class="modal-nome-content">
+            <h2>🍱 Nome da Marmita</h2>
+            <p>Dê um nome para identificar esta marmita:</p>
+            <input type="text" id="input-nome-marmita" placeholder="Ex: Marmita do João" autofocus>
+            <div style="display:flex;gap:10px;margin-top:10px;">
+                <button onclick="confirmarNomeMarmita()" class="btn-confirmar-nome" style="flex:2;">Confirmar</button>
+                <button onclick="fecharModalNomeMarmita()" class="btn-cancelar-nome" style="flex:1;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação -->
+    <div id="modal-confirmacao" class="modal-nome" style="display:none;">
+        <div class="modal-nome-content">
+            <h2 id="confirmacao-titulo">❓ Tem certeza?</h2>
+            <p id="confirmacao-mensagem">Deseja continuar?</p>
+            <div style="display:flex;gap:10px;margin-top:10px;">
+                <button id="confirmacao-sim" class="btn-confirmar-nome" style="flex:1;">Sim</button>
+                <button id="confirmacao-nao" class="btn-cancelar-nome" style="flex:1;">Não</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Identificação (Empresa/Pessoa) -->
+    <div id="modal-identificacao" class="modal-nome" style="display:none;">
+        <div class="modal-nome-content modal-identificacao-content">
+            <div class="identificacao-icone">💳</div>
+            <h2>Como você vai pagar?</h2>
+            <p>Escolha uma opção para continuar:</p>
+            <div class="opcoes-pagamento">
+                <button onclick="selecionarTipoPagamento('pessoa')" class="btn-opcao-pagamento">
+                    <span class="opcao-icone">👤</span>
+                    <span class="opcao-texto">
+                        <strong>Pessoa Física</strong>
+                        <small>Pagar na hora</small>
+                    </span>
+                </button>
+                <button onclick="selecionarTipoPagamento('empresa')" class="btn-opcao-pagamento empresa">
+                    <span class="opcao-icone">🏢</span>
+                    <span class="opcao-texto">
+                        <strong>Empresa</strong>
+                        <small>Cobrança depois</small>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Empresa -->
+    <div id="modal-empresa" class="modal-nome" style="display:none;">
+        <div class="modal-nome-content">
+            <h2>🏢 Identificação da Empresa</h2>
+            <p>Selecione sua empresa e confirme seu nome:</p>
+            <div style="text-align:left;margin-top:20px;">
+                <label class="modal-label">Empresa:</label>
+                <select id="select-empresa-cliente" class="modal-input">
+                    <option value="">Selecione sua empresa</option>
+                </select>
+                <label class="modal-label">Seu Nome:</label>
+                <input type="text" id="input-nome-trabalhador" class="modal-input" placeholder="Digite seu nome completo">
+            </div>
+            <div style="display:flex;gap:10px;margin-top:15px;">
+                <button onclick="confirmarEmpresa()" class="btn-confirmar-nome" style="flex:2;">Confirmar</button>
+                <button onclick="fecharModalEmpresa()" class="btn-cancelar-nome" style="flex:1;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Pagamento -->
+    <div id="modal-pagamento" class="modal-nome" style="display:none;">
+        <div class="modal-nome-content modal-pagamento-content">
+            <div class="identificacao-icone">💳</div>
+            <h2>Forma de Pagamento</h2>
+            <p>Como você prefere pagar?</p>
+            <div class="opcoes-pagamento">
+                <button onclick="selecionarPagamento('Dinheiro')" class="btn-opcao-pagamento">
+                    <span class="opcao-icone">💵</span>
+                    <span class="opcao-texto">
+                        <strong>Dinheiro</strong>
+                        <small>Pagar na entrega/retirada</small>
+                    </span>
+                </button>
+                <button onclick="selecionarPagamento('Cartão Débito')" class="btn-opcao-pagamento">
+                    <span class="opcao-icone">💳</span>
+                    <span class="opcao-texto">
+                        <strong>Cartão Débito</strong>
+                        <small>Maquininha na entrega</small>
+                    </span>
+                </button>
+                <button onclick="selecionarPagamento('Cartão Crédito')" class="btn-opcao-pagamento">
+                    <span class="opcao-icone">💳</span>
+                    <span class="opcao-texto">
+                        <strong>Cartão Crédito</strong>
+                        <small>Maquininha na entrega</small>
+                    </span>
+                </button>
+                <button onclick="selecionarPagamento('PIX')" class="btn-opcao-pagamento">
+                    <span class="opcao-icone">📱</span>
+                    <span class="opcao-texto">
+                        <strong>PIX</strong>
+                        <small>QR Code da maquininha</small>
+                    </span>
+                </button>
+                <button onclick="selecionarPagamento('Vale Refeição')" class="btn-opcao-pagamento">
+                    <span class="opcao-icone">🎫</span>
+                    <span class="opcao-texto">
+                        <strong>Vale Refeição</strong>
+                        <small>Ticket, Sodexo, Alelo, VR</small>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Entrega -->
+    <div id="modal-entrega" class="modal-nome" style="display:none;">
+        <div class="modal-nome-content modal-entrega-content">
+            <div class="identificacao-icone">🛵</div>
+            <h2>Como prefere receber?</h2>
+            <p>Escolha uma opção:</p>
+            <div class="opcoes-pagamento">
+                <button onclick="selecionarEntrega('delivery')" class="btn-opcao-pagamento">
+                    <span class="opcao-icone">🛵</span>
+                    <span class="opcao-texto">
+                        <strong>Delivery</strong>
+                        <small>Entrega no endereço • Taxa R$ 3,00</small>
+                    </span>
+                </button>
+                <button onclick="selecionarEntrega('retirada')" class="btn-opcao-pagamento empresa">
+                    <span class="opcao-icone">🏃</span>
+                    <span class="opcao-texto">
+                        <strong>Retirar no local</strong>
+                        <small>Você busca no restaurante</small>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Endereço -->
+    <div id="modal-endereco" class="modal-nome" style="display:none;">
+        <div class="modal-nome-content">
+            <div class="modal-logo-circle" style="background: linear-gradient(135deg, #2196F3, #42A5F5);">📍</div>
+            <h2>Endereço de Entrega</h2>
+            <p>Digite o endereço completo:</p>
+            <div style="text-align:left;">
+                <label class="modal-label">Endereço:</label>
+                <input type="text" id="input-endereco" class="modal-input" placeholder="Ex: Rua Exemplo, Nº 123">
+                
+                <label class="modal-label">Bairro:</label>
+                <input type="text" id="input-bairro" class="modal-input" placeholder="Ex: Centro">
+                
+                <label class="modal-label">Referência (opcional):</label>
+                <input type="text" id="input-referencia" class="modal-input" placeholder="Ex: Próximo à praça">
+            </div>
+            <div style="display:flex;gap:10px;margin-top:15px;">
+                <button onclick="confirmarEndereco()" class="btn-confirmar-nome" style="flex:2;">Confirmar</button>
+                <button onclick="cancelarEndereco()" class="btn-cancelar-nome" style="flex:1;">Voltar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <div id="conteudo-principal" style="display:none;">
+        
+        <!-- HEADER LARANJA -->
+        <header class="main-header">
+            <div class="header-top">
+                <div class="header-info">
+                    <span>📞 (85) 98965-6293</span>
+                    <span class="status-badge">🟢 Aberto agora</span>
+                </div>
+                <a href="https://wa.me/5585989656293" target="_blank" class="header-whatsapp">
+                    <span>💬</span> Encomendar agora
+                </a>
+            </div>
+        </header>
+
+        <!-- BANNER -->
+        <div class="banner-restaurante">
+            <div class="banner-content">
+                <div class="banner-logo">🍛</div>
+                <div class="banner-text">
+                    <h1>Delícia <span>Cearense</span></h1>
+                    <p>Comida caseira • Self-service • Sabor do Nordeste</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- BARRA DE INFO -->
+        <div class="info-bar">
+            <div class="info-bar-content">
+                <div class="info-left">
+                    <h2>Olá, <strong id="nome-cliente-header">Cliente</strong>! 👋</h2>
+                    <div class="info-tags">
+                        <span class="tag">📅 <span id="data-display"></span></span>
+                        <span class="tag">🍱 Pequena: R$ <span id="preco-pequena-display">15,00</span></span>
+                        <span class="tag">🍱 Grande: R$ <span id="preco-grande-display">20,00</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LAYOUT PRINCIPAL -->
+        <div class="main-layout-simple">
+            <main id="cardapio-container">
+                <div class="loading">Carregando cardápio...</div>
+            </main>
+        </div>
+    </div>
+
+    <!-- CARRINHO FLUTUANTE -->
+    <div class="carrinho-flutuante-simple" id="carrinho-flutuante" onclick="abrirCarrinho()" style="display:none;">
+        <div class="carrinho-flutuante-info">
+            <span class="carrinho-icon">🛒</span>
+            <div>
+                <strong><span id="carrinho-count">0</span> itens no carrinho</strong>
+                <small>Total: R$ <span id="total-carrinho-float">0.00</span></small>
+            </div>
+        </div>
+        <span class="carrinho-flutuante-btn">Ver pedido →</span>
+    </div>
+
+    <!-- MODAL CARRINHO ESTILO APP -->
+    <div id="modal-carrinho" class="modal-carrinho-app">
+        <div class="carrinho-app-container">
+            <div class="carrinho-app-header">
+                <button class="carrinho-app-voltar" onclick="fecharCarrinho()">←</button>
+                <div class="carrinho-app-titulo">
+                    <h2>Seu Pedido</h2>
+                    <span class="carrinho-app-count" id="carrinho-app-count">0 itens</span>
+                </div>
+                <button class="carrinho-app-limpar" onclick="limparCarrinho()" title="Limpar tudo">🗑️</button>
+            </div>
+            <div class="carrinho-app-conteudo" id="carrinho-itens"></div>
+            <div class="carrinho-app-footer">
+                <div class="carrinho-app-resumo">
+                    <div class="resumo-linha">
+                        <span>Subtotal</span>
+                        <span>R$ <span id="subtotal-carrinho">0.00</span></span>
+                    </div>
+                    <div class="resumo-linha total">
+                        <strong>Total</strong>
+                        <strong>R$ <span id="total-carrinho">0.00</span></strong>
+                    </div>
+                </div>
+                <button class="btn-finalizar-app" onclick="finalizarPedido()">
+                    <span>Enviar no WhatsApp</span>
+                    <span>📱</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RODAPÉ (só aparece depois que o cliente digita o nome) -->
+    <footer class="site-footer" id="site-footer" style="display:none;">
+        <div class="footer-content">
+            <p class="footer-text">
+                © 2026 <strong>Delícia Cearense</strong> • Todos os direitos reservados
+            </p>
+            
+            <div class="footer-social">
+                <!-- INSTAGRAM -->
+                <a href="https://www.instagram.com/delicia_cearense_" 
+                   target="_blank" 
+                   class="social-btn instagram" 
+                   title="Siga no Instagram"
+                   rel="noopener noreferrer">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                    <span>Instagram</span>
+                </a>
+                
+                <!-- GOOGLE AVALIAÇÕES -->
+                <a href="https://share.google/a6Ff0yOl3BRc8FUWV" 
+                   target="_blank" 
+                   class="social-btn google" 
+                   title="Avalie no Google"
+                   rel="noopener noreferrer">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/>
+                    </svg>
+                    <span>Avaliar</span>
+                </a>
+                
+                <!-- WHATSAPP -->
+                <a href="https://wa.me/5585989656293" 
+                   target="_blank" 
+                   class="social-btn whatsapp" 
+                   title="Fale conosco no WhatsApp"
+                   rel="noopener noreferrer">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                    <span>WhatsApp</span>
+                </a>
+            </div>
+            
+            <!-- Botão admin minimalista (só ícone) -->
+            <a href="admin-login.html" class="admin-access-btn admin-access-minimal" title="Área do Restaurante">
+                <span class="admin-access-icon">⚙️</span>
+            </a>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
