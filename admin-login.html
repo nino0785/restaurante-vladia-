@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Painel Administrativo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css" />  <!-- ← ADMIN.CSS AQUI -->
+</head>
+<body class="login-page">
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-logo">
+                <div class="login-logo-icon">🔐</div>
+                <h1>Painel Administrativo</h1>
+                <p>Delícia Cearense</p>
+            </div>
+            
+            <form id="login-form" onsubmit="fazerLogin(event)">
+                <div class="login-field">
+                    <label for="login-senha">Senha de Acesso</label>
+                    <input 
+                        type="password" 
+                        id="login-senha" 
+                        placeholder="Digite sua senha" 
+                        autocomplete="current-password"
+                        autofocus
+                        required>
+                    <span class="login-toggle-senha" onclick="toggleSenha()">👁️</span>
+                </div>
+                
+                <div id="login-erro" class="login-erro" style="display:none;">
+                    ❌ Senha incorreta. Tente novamente.
+                </div>
+                
+                <button type="submit" class="btn-login">
+                    <span>Entrar no Painel</span>
+                    <span>→</span>
+                </button>
+            </form>
+            
+            <div class="login-footer">
+                <a href="index.html" class="login-voltar">← Voltar ao cardápio</a>
+                <small>Senha padrão: <code>delicia2026</code></small>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Senha padrão (pode ser alterada depois)
+        const SENHA_PADRAO = 'delicia2026';
+        
+        // Verificar se já está logado
+        document.addEventListener('DOMContentLoaded', function() {
+            if (sessionStorage.getItem('admin_logado') === 'true') {
+                window.location.href = 'admin.html';
+            }
+        });
+        
+        // Toggle mostrar/ocultar senha
+        function toggleSenha() {
+            const input = document.getElementById('login-senha');
+            const btn = event.target;
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁️';
+            }
+        }
+        
+        // Fazer login
+        function fazerLogin(e) {
+            e.preventDefault();
+            
+            const senha = document.getElementById('login-senha').value;
+            const erro = document.getElementById('login-erro');
+            
+            // Pegar senha salva ou usar padrão
+            const senhaSalva = localStorage.getItem('admin_senha') || SENHA_PADRAO;
+            
+            if (senha === senhaSalva) {
+                // Login OK
+                sessionStorage.setItem('admin_logado', 'true');
+                sessionStorage.setItem('admin_login_time', Date.now());
+                
+                // Animação e redirecionamento
+                document.querySelector('.login-card').style.transform = 'scale(0.95)';
+                document.querySelector('.login-card').style.opacity = '0';
+                
+                setTimeout(() => {
+                    window.location.href = 'admin.html';
+                }, 300);
+            } else {
+                // Senha errada
+                erro.style.display = 'block';
+                document.getElementById('login-senha').value = '';
+                document.getElementById('login-senha').focus();
+                document.querySelector('.login-card').classList.add('shake');
+                
+                setTimeout(() => {
+                    document.querySelector('.login-card').classList.remove('shake');
+                }, 500);
+            }
+        }
+    </script>
+</body>
+</html>

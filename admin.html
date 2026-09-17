@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel Admin - Delícia Cearense</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css" />  <!-- ← ADMIN.CSS AQUI -->
+    <script>
+        if (sessionStorage.getItem('admin_logado') !== 'true') {
+            window.location.href = 'admin-login.html';
+        }
+    </script>
+</head>
+<body>
+    <div class="admin-panel">
+        
+        <!-- HEADER DO ADMIN -->
+        <div class="admin-header">
+            <h1>🔧 Painel Administrativo</h1>
+            <div class="admin-header-actions">
+                <a href="index.html" class="btn-header-action" title="Ver cardápio" target="_blank">🍽️ Ver cardápio</a>
+                <button onclick="fazerLogout()" class="btn-header-action danger" title="Sair">🚪 Sair</button>
+            </div>
+        </div>
+        
+        <!-- ABAS -->
+        <div class="admin-tabs">
+            <button class="tab-btn active" onclick="mudarAba('cardapio', this)">📅 Cardápio</button>
+            <button class="tab-btn" onclick="mudarAba('empresas', this)">🏢 Empresas</button>
+        </div>
+
+        <!-- ========== ABA CARDÁPIO ========== -->
+        <div id="aba-cardapio" class="aba-conteudo">
+            
+            <section class="data-section">
+                <h2>📅 Data do Cardápio</h2>
+                <p style="color:#666;font-size:0.9rem;margin-bottom:10px;">
+                    💡 Selecione uma data no calendário para ver o cardápio daquele dia
+                </p>
+                <div class="data-form">
+                    <div>
+                        <label for="data-cardapio">Data:</label>
+                        <input type="date" id="data-cardapio" />
+                    </div>
+                    <button onclick="salvarDataCardapio()" class="btn-reset">🔄 Resetar Cardápio</button>
+                    <button onclick="mostrarSeletorDatas()" class="btn-historico">📋 Ver Dias Anteriores</button>
+                </div>
+                <p id="data-atual-display" style="margin-top:10px;color:#666;"></p>
+                <small style="color:#999;">* Cardápios com mais de 7 dias são automaticamente removidos</small>
+            </section>
+
+            <section class="precos-section">
+                <h2>💰 Preços das Marmitas</h2>
+                <div class="precos-form">
+                    <div>
+                        <label for="preco-pequena">Marmita Pequena (R$):</label>
+                        <input type="number" id="preco-pequena" step="0.01" value="15.00" />
+                    </div>
+                    <div>
+                        <label for="preco-grande">Marmita Grande (R$):</label>
+                        <input type="number" id="preco-grande" step="0.01" value="20.00" />
+                    </div>
+                    <button onclick="salvarPrecos()">Salvar Preços</button>
+                </div>
+            </section>
+
+            <div id="seletor-datas" style="display:none;">
+                <h3>📋 Histórico de Cardápios (últimos 7 dias)</h3>
+                <div id="lista-datas"></div>
+                <button onclick="fecharSeletorDatas()" class="btn-fechar-historico">Fechar</button>
+            </div>
+
+            <section class="form-section">
+                <h2>Adicionar Novo Item</h2>
+                <form id="item-form">
+                    <input type="hidden" id="item-id" />
+                    <div>
+                        <label for="nome">Nome do Item: <span style="color:red;">*</span></label>
+                        <input type="text" id="nome" required />
+                    </div>
+                    <div>
+                        <label for="descricao">Descrição: <span style="color:#999;font-weight:normal;">(opcional)</span></label>
+                        <textarea id="descricao" placeholder="Digite uma descrição para o item (opcional)"></textarea>
+                    </div>
+                    <div>
+                        <label for="categoria">Categoria: <span style="color:red;">*</span></label>
+                        <select id="categoria" required>
+                            <option value="guarnicao">🍚 Guarnição</option>
+                            <option value="saladas">🥗 Saladas</option>
+                            <option value="proteinas">🥩 Proteínas</option>
+                            <option value="bebidas">🥤 Bebidas</option>
+                        </select>
+                    </div>
+                    <div id="preco-item-container" style="display:none;">
+                        <label for="preco-item">Preço da Bebida (R$): <span style="color:red;">*</span></label>
+                        <input type="number" id="preco-item" step="0.01" placeholder="Ex: 6.00" />
+                        <small style="color:#666;display:block;margin-top:5px;">Preço individual da bebida</small>
+                    </div>
+                    <button type="submit">Salvar Item</button>
+                </form>
+            </section>
+
+            <section class="items-list">
+                <h2>Itens do Cardápio</h2>
+                <div id="items-container"></div>
+            </section>
+        </div>
+
+        <!-- ========== ABA EMPRESAS ========== -->
+        <div id="aba-empresas" class="aba-conteudo" style="display:none;">
+            
+            <section class="form-section">
+                <h2>🏢 Cadastrar Empresa</h2>
+                <form id="empresa-form">
+                    <input type="hidden" id="empresa-id" />
+                    <div>
+                        <label for="nome-empresa">Nome da Empresa: <span style="color:red;">*</span></label>
+                        <input type="text" id="nome-empresa" required placeholder="Ex: Construtora XYZ" />
+                    </div>
+                    <div>
+                        <label for="tipo-pagamento">Tipo de Pagamento: <span style="color:red;">*</span></label>
+                        <select id="tipo-pagamento" required>
+                            <option value="semanal">📅 Semanal (toda segunda)</option>
+                            <option value="mensal">📆 Mensal (fim do mês)</option>
+                        </select>
+                    </div>
+                    <button type="submit">Salvar Empresa</button>
+                </form>
+            </section>
+
+            <section class="form-section">
+                <h2>✏️ Ajuste Manual de Trabalhador</h2>
+                <p class="form-info-text">
+                    💡 Os trabalhadores são cadastrados <strong>automaticamente</strong> quando o cliente faz o pedido como empresa. 
+                    Use este formulário apenas para <strong>ajustar valores manualmente</strong>.
+                </p>
+                <form id="trabalhador-form">
+                    <input type="hidden" id="trabalhador-id" />
+                    <div>
+                        <label for="empresa-trabalhador">Empresa: <span style="color:red;">*</span></label>
+                        <select id="empresa-trabalhador" required>
+                            <option value="">Selecione uma empresa</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="nome-trabalhador">Nome do Trabalhador: <span style="color:red;">*</span></label>
+                        <input type="text" id="nome-trabalhador" required placeholder="Ex: João Silva" />
+                    </div>
+                    <div>
+                        <label for="valor-trabalhador">Valor Gasto (R$): <span style="color:red;">*</span></label>
+                        <input type="number" id="valor-trabalhador" step="0.01" required placeholder="Ex: 25.00" />
+                    </div>
+                    <div class="form-botoes">
+                        <button type="submit">Salvar Ajuste</button>
+                        <button type="button" onclick="limparFormularioTrabalhador()" class="btn-limpar-form">Limpar</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="items-list">
+                <h2>📋 Empresas Cadastradas</h2>
+                <div id="empresas-container"></div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+    function fazerLogout() {
+        if (confirm('Deseja realmente sair do painel?')) {
+            sessionStorage.removeItem('admin_logado');
+            sessionStorage.removeItem('admin_login_time');
+            window.location.href = 'admin-login.html';
+        }
+    }
+    </script>
+    <script src="admin.js"></script>
+</body>
+</html>

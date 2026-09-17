@@ -1,0 +1,9 @@
+[
+    {
+        "id": 1,
+        "nome": "Salada Caesar",
+        "descricao": "Alface, croutons, parmesão e molho caesar",
+        "preco": 32.90,
+        "categoria": "entrada"
+    }
+]
